@@ -19,6 +19,49 @@ def DisplayWhoseTurnItIs(WhoseTurn):
   else:
     print("It is Black's turn")
 
+def display_menu():
+    print("Main Menu")
+    print()
+    MainMenu = ["1. Start new game",
+                "2. Load existing game",
+                "3. Play sample game",
+                "4. View high scores",
+                "5. Settings",
+                "6. Quit program"]
+    for count in MainMenu:
+        print(count)
+
+def get_menu_selection():
+    print()
+    Valid = False
+    while Valid == False:
+      try:
+        UserSelection = int(input("Please select an option: "))
+        if UserSelection in [1,2,3,4,5,6]:
+          Valid = True
+        elif UserSelection not in [1,2,3,4,5,6]:
+          print("Please enter an option from the list.")
+      except ValueError:
+          print("Please enter an option from the list.")
+    return UserSelection
+
+def make_selection(UserSelection,Quit):
+  if UserSelection == 1:
+    SampleGame = "n"
+    play_game(SampleGame)
+  elif UserSelection == 2:
+    pass
+  elif UserSelection == 3:
+    SampleGame = "Y"
+    play_game(SampleGame)
+  elif UserSelection == 4:
+    pass
+  elif UserSelection == 5:
+    pass
+  elif UserSelection == 6:
+    Quit = True
+  return Quit
+
 def GetTypeOfGame():
   TypeOfGame = None
   while TypeOfGame != "y" or TypeOfGame != "n":
@@ -49,13 +92,13 @@ def DisplayBoard(Board):
   print()
   for RankNo in range(1, BOARDDIMENSION + 1):
     print("     -----------------------")
-    print(RankNo, end="   ")
+    print("R{0}".format(RankNo), end="  ")
     for FileNo in range(1, BOARDDIMENSION + 1):
       print("|" + Board[RankNo][FileNo], end="")
     print("|")
   print("     -----------------------")
   print()
-  print("      1  2  3  4  5  6  7  8")
+  print("     F1 F2 F3 F4 F5 F6 F7 F8")
   print()
   print()    
 
@@ -130,8 +173,6 @@ def CheckMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseT
   MoveIsLegal = True
   if (FinishFile == StartFile) and (FinishRank == StartRank):
     MoveIsLegal = False
-  #if FinishFile not in range(1, BOARDDIMENSION + 1) or FinishRank not in range(1, BOARDDIMENSION + 1):
-    #MoveIsLegal = False
   else:
     try:
       PieceType = Board[StartRank][StartFile][1]
@@ -165,18 +206,24 @@ def CheckMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseT
 
 def InitialiseBoard(Board, SampleGame):
   if SampleGame == "Y":
-    for RankNo in range(1, BOARDDIMENSION + 1):
-      for FileNo in range(1, BOARDDIMENSION + 1):
-        Board[RankNo][FileNo] = "  "
-    Board[1][2] = "BG"
-    Board[1][4] = "BS"
-    Board[1][8] = "WG"
-    Board[2][1] = "WR"
-    Board[3][1] = "WS"
-    Board[3][2] = "BE"
-    Board[3][8] = "BE"
-    Board[6][8] = "BR"
+    InitialiseSampleBoard(Board, SampleGame)
   else:
+    InitialiseNewBoard(Board, SampleGame)
+
+def InitialiseSampleBoard(Board, SampleGame):
+  for RankNo in range(1, BOARDDIMENSION + 1):
+    for FileNo in range(1, BOARDDIMENSION + 1):
+      Board[RankNo][FileNo] = "  "
+  Board[1][2] = "BG"
+  Board[1][4] = "BS"
+  Board[1][8] = "WG"
+  Board[2][1] = "WR"
+  Board[3][1] = "WS"
+  Board[3][2] = "BE"
+  Board[3][8] = "BE"
+  Board[6][8] = "BR"
+
+def InitialiseNewBoard(Board, SampleGame):
     for RankNo in range(1, BOARDDIMENSION + 1):
       for FileNo in range(1, BOARDDIMENSION + 1):
         if RankNo == 2:
@@ -201,17 +248,71 @@ def InitialiseBoard(Board, SampleGame):
         else:
           Board[RankNo][FileNo] = "  "
                     
-def GetMove(StartSquare, FinishSquare):
+def GetMove(StartSquare, FinishSquare, Quit, WhoseTurn):
     try:
-      StartSquare = int(input("Enter coordinates of square containing piece to move (file first): "))
-      FinishSquare = int(input("Enter coordinates of square to move piece to (file first): "))
-      if StartSquare < 10:
-        print("Please provide both FILE and RANK for this move") 
-      elif FinishSquare < 10:
+      Quit = False
+      StartSquare = int(input("Enter coordinates of square containing piece to move (file first) or type '-1' for menu: "))
+      if StartSquare == -1:
+        DisplayInGameMenu(StartSquare)
+        InGameOption = InGameSelection()
+        Quit = MakeInGameSelection(InGameOption,StartSquare, FinishSquare,Quit,WhoseTurn)
+      elif StartSquare < 10:
         print("Please provide both FILE and RANK for this move")
+      else:
+        FinishSquare = int(input("Enter coordinates of square to move piece to (file first): "))
+      if not(Quit):
+        if FinishSquare < 10:
+          print("Please provide both FILE and RANK for this move")
     except ValueError:
       print("Please enter an integer.")
-    return StartSquare, FinishSquare
+    return StartSquare, FinishSquare, Quit
+
+def DisplayInGameMenu(StartSquare):
+  print()
+  print("Options")
+  print()
+  InGameMenu = ["1. Save Game",
+                "2. Quit to Menu",
+                "3. Return to game",
+                "4. Surrender"]
+  for count in InGameMenu:
+    print(count)
+
+def InGameSelection():
+  print()
+  Valid = False
+  while Valid == False:
+    try:
+      InGameOption = int(input("Please select an option: "))
+      if InGameOption in [1,2,3,4]:
+        Valid = True
+      elif InGameOption not in [1,2,3,4]:
+        print("Please enter an option from the list.")
+    except ValueError:
+      print("Please enter an option from the list.")
+  return InGameOption
+
+def MakeInGameSelection(InGameOption,StartSquare, FinishSquare,Quit,WhoseTurn):
+  if InGameOption == 1:
+    pass
+  elif InGameOption == 2:
+    Quit = True
+  elif InGameOption == 3:
+    Quit = False
+    StartSquare, FinishSquare, Quit = GetMove(StartSquare, FinishSquare, Quit, WhoseTurn)
+    print()
+  elif InGameOption == 4:
+    print()
+    print("Surrendering...")
+    print()
+    if WhoseTurn == "W":
+      print("White surrendered. Black wins!")
+      print()
+    else:
+      print("Black surrendered. White wins!")
+      print()
+    Quit = True
+  return Quit
 
 def ConfirmMove():
     print()
@@ -278,9 +379,7 @@ def MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn, Pie
       Board[FinishRank][FinishFile] = Board[StartRank][StartFile]
       Board[StartRank][StartFile] = "  "
     
-
-    
-if __name__ == "__main__":
+def play_game(SampleGame):
   Board = CreateBoard() #0th index not used
   StartSquare = 0 
   FinishSquare = 0
@@ -288,7 +387,6 @@ if __name__ == "__main__":
   while PlayAgain == "Y":
     WhoseTurn = "W"
     GameOver = False
-    SampleGame = GetTypeOfGame()
     if ord(SampleGame) >= 97 and ord(SampleGame) <= 122:
       SampleGame = chr(ord(SampleGame) - 32)
     InitialiseBoard(Board, SampleGame)
@@ -297,25 +395,43 @@ if __name__ == "__main__":
       DisplayWhoseTurnItIs(WhoseTurn)
       MoveIsLegal = False
       while not(MoveIsLegal):
-        StartSquare, FinishSquare = GetMove(StartSquare, FinishSquare)
-        StartRank = StartSquare % 10
-        StartFile = StartSquare // 10
-        FinishRank = FinishSquare % 10
-        FinishFile = FinishSquare // 10
-        MoveIsLegal = CheckMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
-        if not(MoveIsLegal):
-          print("That is not a legal move - please try again")
-      MoveConfirmed = ConfirmMove()  
-      Pieces,PieceType,PieceColour = GetPieceName(FinishRank, FinishFile, Board)
-      GameOver = CheckIfGameWillBeWon(Board, FinishRank, FinishFile)
-      if MoveConfirmed == "y":
-        MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn, PieceType, PieceColour)
-      if GameOver:
-        DisplayWinner(WhoseTurn)
-      if MoveConfirmed == "y" and WhoseTurn == "W":
-        WhoseTurn = "B"
+        Quit = False
+        StartSquare, FinishSquare, Quit = GetMove(StartSquare, FinishSquare, Quit, WhoseTurn)
+        if not(Quit):
+          StartRank = StartSquare % 10
+          StartFile = StartSquare // 10
+          FinishRank = FinishSquare % 10
+          FinishFile = FinishSquare // 10
+          MoveIsLegal = CheckMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
+          if not(MoveIsLegal):
+            print("That is not a legal move - please try again")
+        else:
+          MoveIsLegal = True
+      if not(Quit):
+        MoveConfirmed = ConfirmMove()  
+        Pieces,PieceType,PieceColour = GetPieceName(FinishRank, FinishFile, Board)
+        GameOver = CheckIfGameWillBeWon(Board, FinishRank, FinishFile)
+        if MoveConfirmed == "y":
+          MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn, PieceType, PieceColour)
+        if GameOver:
+          DisplayWinner(WhoseTurn)
+        if MoveConfirmed == "y" and WhoseTurn == "W":
+          WhoseTurn = "B"
+        else:
+          WhoseTurn = "W"
       else:
-        WhoseTurn = "W"
-    PlayAgain = input("Do you want to play again (enter Y for Yes)? ")
-    if ord(PlayAgain) >= 97 and ord(PlayAgain) <= 122:
-      PlayAgain = chr(ord(PlayAgain) - 32)
+        GameOver = True
+    if not(Quit):
+      PlayAgain = input("Do you want to play again (enter Y for Yes)? ")
+      if ord(PlayAgain) >= 97 and ord(PlayAgain) <= 122:
+        PlayAgain = chr(ord(PlayAgain) - 32)
+    else:
+      PlayAgain = "N"
+    
+if __name__ == "__main__":
+  Quit = False
+  while not(Quit):
+    display_menu()
+    UserSelection = get_menu_selection()
+    Quit = make_selection(UserSelection,Quit)
+  
