@@ -47,13 +47,11 @@ def get_menu_selection():
 
 def make_selection(UserSelection,Quit):
   if UserSelection == 1:
-    SampleGame = "n"
-    play_game(SampleGame)
+    play_game("N")
   elif UserSelection == 2:
     pass
   elif UserSelection == 3:
-    SampleGame = "Y"
-    play_game(SampleGame)
+    play_game("Y")
   elif UserSelection == 4:
     pass
   elif UserSelection == 5:
@@ -155,11 +153,27 @@ def CheckNabuMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile):
   CheckNabuMoveIsLegal = False
   if abs(FinishFile - StartFile) == 1 and abs(FinishRank - StartRank) == 1:
     CheckNabuMoveIsLegal = True
+  elif abs(FinishFile - StartFile) == 2 and abs(FinishRank - StartRank) == 2:
+    CheckNabuMoveIsLegal = True
+  elif abs(FinishFile - StartFile) == 3 and abs(FinishRank - StartRank) == 3:
+    CheckNabuMoveIsLegal = True
+  elif abs(FinishFile - StartFile) == 4 and abs(FinishRank - StartRank) == 4:
+    CheckNabuMoveIsLegal = True
+  elif abs(FinishFile - StartFile) == 5 and abs(FinishRank - StartRank) == 5:
+    CheckNabuMoveIsLegal = True
+  elif abs(FinishFile - StartFile) == 6 and abs(FinishRank - StartRank) == 6:
+    CheckNabuMoveIsLegal = True
+  elif abs(FinishFile - StartFile) == 7 and abs(FinishRank - StartRank) == 7:
+    CheckNabuMoveIsLegal = True
+  elif abs(FinishFile - StartFile) == 8 and abs(FinishRank - StartRank) == 8:
+    CheckNabuMoveIsLegal = True
   return CheckNabuMoveIsLegal
 
 def CheckMarzazPaniMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile):
   CheckMarzazPaniMoveIsLegal = False
   if (abs(FinishFile - StartFile) == 1 and abs(FinishRank - StartRank) == 0) or (abs(FinishFile - StartFile) == 0 and abs(FinishRank - StartRank) ==1):
+    CheckMarzazPaniMoveIsLegal = True
+  elif abs(FinishFile - StartFile) == 1 and abs(FinishRank - StartRank) == 1:
     CheckMarzazPaniMoveIsLegal = True
   return CheckMarzazPaniMoveIsLegal
 
@@ -177,13 +191,13 @@ def CheckMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseT
     try:
       PieceType = Board[StartRank][StartFile][1]
       PieceColour = Board[StartRank][StartFile][0]
-      if WhoseTurn == "W":
-        if PieceColour != "W":
-          MoveIsLegal = False
-        if Board[FinishRank][FinishFile][0] == "W":
-          MoveIsLegal = False
     except IndexError:
       MoveIsLegal = False
+    if WhoseTurn == "W":
+      if PieceColour != "W":
+        MoveIsLegal = False
+      if Board[FinishRank][FinishFile][0] == "W":
+        MoveIsLegal = False
     else:
       if PieceColour != "B":
         MoveIsLegal = False
@@ -314,7 +328,7 @@ def MakeInGameSelection(InGameOption,StartSquare, FinishSquare,Quit,WhoseTurn):
     Quit = True
   return Quit
 
-def ConfirmMove():
+def ConfirmMove(StartRank,StartFile,FinishRank,FinishFile):
     print()
     print("Move from Rank {0}, File {1} to Rank {2}, File {3}?".format(StartRank,StartFile,FinishRank,FinishFile))
     MoveConfirmed = None
@@ -407,8 +421,8 @@ def play_game(SampleGame):
             print("That is not a legal move - please try again")
         else:
           MoveIsLegal = True
-      if not(Quit):
-        MoveConfirmed = ConfirmMove()  
+      if MoveIsLegal == True:
+        MoveConfirmed = ConfirmMove(StartRank,StartFile,FinishRank,FinishFile)  
         Pieces,PieceType,PieceColour = GetPieceName(FinishRank, FinishFile, Board)
         GameOver = CheckIfGameWillBeWon(Board, FinishRank, FinishFile)
         if MoveConfirmed == "y":
