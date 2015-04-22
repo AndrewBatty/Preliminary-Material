@@ -102,11 +102,23 @@ def DisplayBoard(Board):
 
 def CheckRedumMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, ColourOfPiece):
   CheckRedumMoveIsLegal = False
-  if ColourOfPiece == "W":
-    if FinishRank == StartRank - 1:
+  if StartRank == 7: #To make sure that this piece can only move 2 squares on it's first turn. on the whites turn.
+    if ColourOfPiece == "W":  
+      if FinishRank == StartRank - 2: #Allows the piece to move 2 squares.
+        if FinishFile == StartFile and Board[FinishRank][FinishFile] == "  ":
+          CheckRedumMoveIsLegal = True
+        elif abs(FinishFile - StartFile) == 1 and Board[FinishRank][FinishFile][0] == "B":
+          CheckRedumMoveIsLegal = True
+  if FinishRank == StartRank - 1:
+    if FinishFile == StartFile and Board[FinishRank][FinishFile] == "  ":
+      CheckRedumMoveIsLegal = True
+    elif abs(FinishFile - StartFile) == 1 and Board[FinishRank][FinishFile][0] == "B":
+      CheckRedumMoveIsLegal = True
+  elif StartRank == 2: #To make sure that this piece can only move 2 squares on it's first turn. on the blacks turn.
+    if FinishRank == StartRank + 2: #Allows the piece to move 2 squares.
       if FinishFile == StartFile and Board[FinishRank][FinishFile] == "  ":
         CheckRedumMoveIsLegal = True
-      elif abs(FinishFile - StartFile) == 1 and Board[FinishRank][FinishFile][0] == "B":
+      elif abs(FinishFile - StartFile) == 1 and Board[FinishRank][FinishFile][0] == "W":
         CheckRedumMoveIsLegal = True
   elif FinishRank == StartRank + 1:
     if FinishFile == StartFile and Board[FinishRank][FinishFile] == "  ":
@@ -151,21 +163,7 @@ def CheckGisgigirMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile
 
 def CheckNabuMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile):
   CheckNabuMoveIsLegal = False
-  if abs(FinishFile - StartFile) == 1 and abs(FinishRank - StartRank) == 1:
-    CheckNabuMoveIsLegal = True
-  elif abs(FinishFile - StartFile) == 2 and abs(FinishRank - StartRank) == 2:
-    CheckNabuMoveIsLegal = True
-  elif abs(FinishFile - StartFile) == 3 and abs(FinishRank - StartRank) == 3:
-    CheckNabuMoveIsLegal = True
-  elif abs(FinishFile - StartFile) == 4 and abs(FinishRank - StartRank) == 4:
-    CheckNabuMoveIsLegal = True
-  elif abs(FinishFile - StartFile) == 5 and abs(FinishRank - StartRank) == 5:
-    CheckNabuMoveIsLegal = True
-  elif abs(FinishFile - StartFile) == 6 and abs(FinishRank - StartRank) == 6:
-    CheckNabuMoveIsLegal = True
-  elif abs(FinishFile - StartFile) == 7 and abs(FinishRank - StartRank) == 7:
-    CheckNabuMoveIsLegal = True
-  elif abs(FinishFile - StartFile) == 8 and abs(FinishRank - StartRank) == 8:
+  if abs(FinishFile - StartFile) == abs(FinishRank - StartRank):
     CheckNabuMoveIsLegal = True
   return CheckNabuMoveIsLegal
 
@@ -421,7 +419,7 @@ def play_game(SampleGame):
             print("That is not a legal move - please try again")
         else:
           MoveIsLegal = True
-      if MoveIsLegal == True:
+      if not(Quit):
         MoveConfirmed = ConfirmMove(StartRank,StartFile,FinishRank,FinishFile)  
         Pieces,PieceType,PieceColour = GetPieceName(FinishRank, FinishFile, Board)
         GameOver = CheckIfGameWillBeWon(Board, FinishRank, FinishFile)
